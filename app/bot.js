@@ -1,4 +1,6 @@
-const {sendMessage, ButtonPaginator} = require('./index')
+
+const {sendMessage, ButtonPaginator} = require('../index')
+const config = require('./config.json')
 const Discord = require('discord.js')
 const client = new Discord.Client()
 require('discord-buttons')(client)
@@ -33,4 +35,4 @@ client.on('message', async(message) => {
    )
   }
 }) 
-client.login("ODYxOTMyMzA2Njk2ODk2NTMz.YOQ_Aw.gXM8X2slXct1Wk9-woxHQapFlsQ")
+client.login(config.token)

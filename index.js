@@ -1,6 +1,7 @@
 const colors = require('kolors-logger')
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
+require('dotenv')
 function sendMessage(messageClient, messageToSend) {
   let message = messageClient
   let msg = messageToSend
@@ -118,5 +119,5 @@ async function resetCommand() {
 async function fightCommand() {
 
 }
-async function 
+
 module.exports = { sendMessage, ButtonPaginator }
