@@ -1,0 +1,33 @@
+{
+  "name": "prodigous",
+  "version": "1.0.1",
+  "description": "A npm package that allows you to create commands using discord.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec node bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcussaw123/prodigous-npm.git"
+  },
+  "keywords": [
+    "discord",
+    "discord.js",
+    "discord-commands",
+    "custom"
+  ],
+  "author": "Marcus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marcussaw123/prodigous-npm/issues"
+  },
+  "homepage": "https://github.com/marcussaw123/prodigous-npm#readme",
+  "dependencies": {
+    "discord-buttons": "^4.0.0",
+    "discord.js": "^12.5.3",
+    "mongoose": "^5.13.2",
+    "nodemon": "^2.0.9",
+    "pm2": "^5.1.0"
+  }
+}
