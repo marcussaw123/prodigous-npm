@@ -4,3 +4,4 @@ const Schema = new mongoose.Schema({
   balance: Number,
   item: Object
 })
+module.exports = mongoose.model("economie", Schema)

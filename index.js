@@ -1,7 +1,10 @@
 const colors = require('kolors-logger')
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
+const db = require('./models/economy')
+const bin = require('sourcebin')
 require('dotenv')
+let isConnected = false
 function sendMessage(messageClient, messageToSend) {
   let message = messageClient
   let msg = messageToSend
@@ -85,12 +88,42 @@ async function connect(mongodbURI) {
   await mongoose.connect(mongodbURI, {
     useNewUrlParser: true, 
     useUnifiedTopology: true
-  }).then(() => colors.green("MongoDB connected => prodigous package")).catch((err) => {
+  }).then(() => {
+    colors.cyan("mongodb connected -> prodigous package")
+    isConnected = true
+  }).catch((err) => {
     throw new Error(err)
   })
 }
-async function balanceCommand(userID) {
-  
+async function balanceCommand(messageClient) {
+  if(isConnected !== true) return colors.red("ERROR: Connect to mongodb first!")
+  const message = messageClient
+ const userID = message.author.id
+  if(!messageClient) return colors.red("Include the message client in the fuction")
+  let data = await db.findOne({userID})
+  if(!data) {
+    let i = await db.create({
+      userID,
+      balance: 0,
+      item: []
+    })
+    await i.save()
+    const embed = new Discord.MessageEmbed()
+    .setTitle(`${message.author.username}'s balance'`)
+    .setDescription(`Balance: \`0\``)
+    .setColor("RANDOM")
+    .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
+    .setTimestamp()
+    return message.channel.send(embed)
+  } else {
+    const embed = new Discord.MessageEmbed()
+    .setTitle(`${message.author.username}'s balance`)
+    .setDescription(`Balance: \`${data.balance.toLocaleString()}\``)
+    .setColor("RANDOM")
+    .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
+    .setTimestamp()
+    return message.channel.send(embed)
+  }
 }
 async function leaderboardCommand() {
 
@@ -107,11 +140,30 @@ async function start() {
 async function giveCommand() {
 
 }
-async function addCommand() {
-
+async function addCommand(userID, amountToAdd) {
+  if(isNaN(amountToAdd)) return colors.red("Amount is not a number")
+  if(!userID) return colors.red("Input the user id")
+  await db.findOneAndUpdate({userID}, function(err, res) {
+    if(err) {
+      colors.red("Could not find user in database")
+    } else {
+      
+    }
+  })
 }
-async function resetAll() {
-
+async function resetAll(messageClient) {
+  await db.find({}, function (err, result) {
+    if(err) {
+      throw new Error(err)
+    } else {
+      result.forEach(async(s) => {
+        await db.findOneAndUpdate({userID: s.userID}, {
+          balance: 0
+        })
+      })
+      return messageClient.channel.send("Reseted all the data from the database")
+    }
+  })
 }
 async function resetCommand() {
 
@@ -119,5 +171,36 @@ async function resetCommand() {
 async function fightCommand() {
 
 }
+async function getData() {
+  let datas = []
+  let counter = 1
+  await db.find({}, function (err, res){
+    if(err) {
+      throw new Error(err)
+    } else {
+      res.forEach((info) => {
+        datas.push({userID: info.userID, balance: info.balance})
+      })
+      const mapped = datas.map((s) => {
+        return `${counter++}. userID: ${s.userID} - Money: ${s.balance} \n`
+      })
+      console.log(mapped)
+      const create = bin.create(
+        [
+          {
+            content: mapped.join(),
+            language: 'text',
+          },
+        ],
+        {
+          title: 'Exported data',
+          description: "no description..."
+        },
+      ).then((bin) => {
+        return bin.url
+      })
+    }
+  })
+}
 
-module.exports = { sendMessage, ButtonPaginator }
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll }

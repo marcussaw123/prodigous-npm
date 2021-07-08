@@ -1,5 +1,5 @@
 
-const {sendMessage, ButtonPaginator} = require('../index')
+const {sendMessage, connect, balanceCommand, getData, resetAll} = require('../index')
 const config = require('./config.json')
 const Discord = require('discord.js')
 const client = new Discord.Client()
@@ -8,6 +8,7 @@ const {MessageButton, MessageActionRow} = require('discord-buttons')
 client.on('ready', () => {
 console.log(client.user.username)
 })
+
 client.on('message', async(message) => {
   if(message.content === '!test') {
     await sendMessage(message, "Test Npm Works!")
@@ -33,6 +34,17 @@ client.on('message', async(message) => {
     client,
     MessageActionRow
    )
+  } else if(message.content === '!bal') {
+    await balanceCommand(message)
+  } else if(message.content === '!getdata') {
+    let data = await getData()
+    console.log(data)
+  } else if(message.content === "!resetall") {
+    await resetAll(message)
   }
-}) 
+})
+
+connect("mongodb+srv://lgbt:Je0d1myGuvYtiOWf@cluster0.3ok4e.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+
 client.login(config.token)
+
