@@ -128,8 +128,60 @@ async function balanceCommand(messageClient) {
 async function leaderboardCommand() {
 
 }
-async function blackjackCommand() {
-
+async function blackjackCommand(message) {
+  let userNumber = Math.floor(Math.random() * 20)
+  let botNumber = Math.floor(Math.random() * 20)
+  const filter = m => m.author.id === message.author.id
+  let collector = await message.channel.createMessageCollector(filter, {time: 150000})
+collector.on('collect', async(m) => {
+  if(m.content === 'h') {
+    if(userNumber > 21 || botNumber === 21) {
+      await collector.stop()
+      message.channel.send("you lost!")
+    } else if(botNumber > 21 || userNumber === 21){
+      await collector.stop()
+      message.channel.send("You Win!")
+    } else {
+    userNumber = Math.floor(Math.random() * 5) + userNumber
+    botNumber = Math.floor(Math.random() * 5) + botNumber
+    if(userNumber > 21 || botNumber === 21) {
+      await collector.stop()
+      message.channel.send("You lost")
+    } else if(botNumber > 21 || userNumber === 21) {
+      await collector.stop()
+      message.channel.send('you win')
+    } else {
+    message.channel.send(`User: ${userNumber} Bot: ${botNumber}`)
+    }
+    }
+    
+  } else if(m.content === 's') {
+    if(botNumber > 21 || userNumber === 21) {
+      await collector.stop()
+      message.channel.send("You win")
+    } else if(userNumber > 21 || botNumber === 21) {
+      await collector.stop()
+      message.channel.send("You Lose!")
+    } else {
+      if(userNumber > 21 || botNumber === 21) {
+      await collector.stop()
+      message.channel.send("You lost")
+    } else if(botNumber > 21 || userNumber === 21) {
+      await collector.stop()
+      message.channel.send('you win')
+    } else {
+    botNumber = Math.floor(Math.random() * 5) + botNumber
+    await message.channel.send(`user: ${userNumber} bot: ${botNumber}`)
+    }
+    }
+  } else if(m.content === 'e') {
+    await collector.stop()
+    await message.channel.send("Stoped the game!")
+  } else {
+    await collector.stop()
+    await message.channel.send("Invalid option!")
+  }
+})
 }
 async function shopCommand() {
 
@@ -143,12 +195,14 @@ async function giveCommand() {
 async function addCommand(userID, amountToAdd) {
   if(isNaN(amountToAdd)) return colors.red("Amount is not a number")
   if(!userID) return colors.red("Input the user id")
-  await db.findOneAndUpdate({userID}, function(err, res) {
-    if(err) {
-      colors.red("Could not find user in database")
-    } else {
-      
+  let data = await db.findOne({userID})
+  if(!data) return colors.red("User is not in the database")
+  await db.findOneAndUpdate({userID}, {
+    $inc: {
+      balance: parseInt(amountToAdd)
     }
+  }).then((update) => {
+    return update
   })
 }
 async function resetAll(messageClient) {
@@ -203,4 +257,4 @@ async function getData() {
   })
 }
 
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll }
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand }
