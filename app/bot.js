@@ -1,5 +1,5 @@
 
-const {sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, ButtonPaginator} = require('../index')
+const {sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, ButtonPaginator, userInfo} = require('../index')
 const config = require('./config.json')
 const Discord = require('discord.js')
 const client = new Discord.Client()
@@ -204,6 +204,9 @@ client.on('message', async(message) => {
           }
       }
 
+  } else if(command === 'userinfo') {
+    let member = message.mentions.users.first() || message.author;
+    await userInfo(member.id, message)
   }
 })
 

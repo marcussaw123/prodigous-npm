@@ -256,5 +256,34 @@ async function getData() {
     }
   })
 }
+async function userInfo(userID, message) {
+  let member = message.guild.members.cache.get(userID)
+  if(!member) return message.channel.send("Member not in server")
+  const embed = new Discord.MessageEmbed()
+      .setTitle(`${member.user.username}'s status`)
+      let presence = member.presence
+      if(presence.status === 'offline') {
+        embed.addField("Status", "offline")
+        message.channel.send(embed)
+      } else {
+        let arr = presence.clientStatus
+        let key = Object.keys(arr)[0]
+        embed.addField("Status", presence.status)
+        embed.addField("Device Log on", key)
+        if(presence.activities.length === 0) {
+          message.channel.send(embed)
+        } else {
+          if(presence.activities[0].state === null && presence.activities[0].emoji !== null) {
+            embed.addField("Custom Status", `<:${presence.activities[0].emoji.name}:${presence.activities[0].emoji.id}>`)
+          } else if(presence.activities[0].state !== null && presence.activities[0].emoji !== null) {
+            embed.addField("Custom Status", `<:${presence.activities[0].emoji.name}:${presence.activities[0].emoji.id}> ${presence.activities[0].state}`)
+          } else {
+            embed.addField("Custom Status", `${presence.activities[0].state}`)
+          }
+          message.channel.send(embed)
+        }
+      }
+  
+  }
 
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand }
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo }
