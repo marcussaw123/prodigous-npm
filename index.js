@@ -137,7 +137,7 @@ await db.find({}, function(err, result) {
     lb.sort((a, b) => b.amount - a.amount).filter(x => !isNaN(x.amount))
   let counter = 1
     const mapped = lb.map((s) => {
-      return `${counter++}. User: ${s.userUsername}(**${s.userID}**) Balance: ${s.amount}`
+      return `${counter++}. User: ${s.userUsername}(**${s.userID}**) Balance: \`${s.amount.toLocaleString()}\``
     })
     const embed = new Discord.MessageEmbed()
     .setTitle("LEADERBOARD")
