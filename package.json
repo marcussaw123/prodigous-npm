@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/marcussaw123/prodigous-npm#readme",
   "dependencies": {
+    "child_process": "^1.0.2",
     "discord-buttons": "^4.0.0",
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",

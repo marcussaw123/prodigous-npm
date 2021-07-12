@@ -1,5 +1,6 @@
 
-const {sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, ButtonPaginator, userInfo} = require('../index')
+const {sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, ButtonPaginator, userInfo, leaderboardCommand} = require('../index')
+const child_process = require('child_process')
 const config = require('./config.json')
 const Discord = require('discord.js')
 const client = new Discord.Client()
@@ -28,7 +29,7 @@ client.on('message', async(message) => {
    let embed2 = new Discord.MessageEmbed()
    .setTitle("Page Two")
    .setDescription("PAGE TWO")
-   await ButtonPaginato([embed1, embed2], [
+   await ButtonPaginator([embed1, embed2], [
      {
        color: 'red',
        label: "front"
@@ -51,7 +52,9 @@ client.on('message', async(message) => {
   } else if(command === "resetall") {
     await resetAll(message)
   } else if(command === "add") {
-    await addCommand(message.author.id, 1000)
+    if(!args[0]) return message.channel.send("Need a user id!")
+    if(!args[1]) return message.channel.send("Need a amount")
+    await addCommand(args[0], args[1], message)
     await message.channel.send(`Added the coins`)
   } else if(command === 'bj') {
     await blackjackCommand(message)
@@ -207,6 +210,22 @@ client.on('message', async(message) => {
   } else if(command === 'userinfo') {
     let member = message.mentions.users.first() || message.author;
     await userInfo(member.id, message)
+  } else if(command === 'pm2') {
+    if(!args[0]) return message.channel.send("Mention the command to execute!")
+    let code = args.join(" ")
+    await child_process.exec("npx pm2 "+code, (err, res) => {
+      if(err) return message.channel.send(err.slice(0, 2000), {code: 'js'})
+      message.channel.send(res.slice(0, 2000), {code: 'js'})
+    })
+  } else if(command === 'terminal') {
+    if(!args[0]) return message.channel.send("Mention the command to execute!")
+    let code = args.join(" ")
+    await child_process.exec(code, (err, res) => {
+      if(err) return message.channel.send(err.slice(0, 2000), {code: 'js'})
+      message.channel.send(res.slice(0, 2000), {code: 'js'})
+    })
+  } else if(command === 'lb' || command === 'leaderboard') {
+    await leaderboardCommand(message, client)
   }
 })
 

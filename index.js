@@ -125,8 +125,27 @@ async function balanceCommand(messageClient) {
     return message.channel.send(embed)
   }
 }
-async function leaderboardCommand() {
-
+async function leaderboardCommand(message, client) {
+  let lb = []
+await db.find({}, function(err, result) {
+  if(err) {
+    console.log(err)
+  } else {
+    result.forEach(async(info) => {
+      await lb.push({userID: info.userID, userUsername: client.users.cache.get(info.userID).tag, amount: info.balance})
+    })
+    lb.sort((a, b) => b.amount - a.amount).filter(x => !isNaN(x.amount))
+  let counter = 1
+    const mapped = lb.map((s) => {
+      return `${counter++}. User: ${s.userUsername}(**${s.userID}**) Balance: ${s.amount}`
+    })
+    const embed = new Discord.MessageEmbed()
+    .setTitle("LEADERBOARD")
+    .setDescription(mapped)
+    .setColor("BLUE")
+    message.channel.send(embed)
+  }
+})
 }
 async function blackjackCommand(message) {
   let userNumber = Math.floor(Math.random() * 20)
@@ -192,17 +211,27 @@ async function start() {
 async function giveCommand() {
 
 }
-async function addCommand(userID, amountToAdd) {
+async function addCommand(userID, amountToAdd, message) {
+  if(!amountToAdd) return colors.red("No amount inputted")
+  if(!message) return colors.red("message not define!")
   if(isNaN(amountToAdd)) return colors.red("Amount is not a number")
   if(!userID) return colors.red("Input the user id")
   let data = await db.findOne({userID})
-  if(!data) return colors.red("User is not in the database")
+  if(!data) {
+    let d = await db.create({
+      userID: userID,
+      item: [],
+      balance: amountToAdd
+    })
+    await d.save()
+    return message.channel.send("Command completed!")
+  }
   await db.findOneAndUpdate({userID}, {
     $inc: {
       balance: parseInt(amountToAdd)
     }
   }).then((update) => {
-    return update
+    return update && message.channel.send("Command completed!")
   })
 }
 async function resetAll(messageClient) {
@@ -286,4 +315,4 @@ async function userInfo(userID, message) {
   
   }
 
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo }
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand }
