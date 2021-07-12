@@ -45,7 +45,7 @@ client.on('message', async(message) => {
     MessageActionRow
    )
   } else if(command === 'bal') {
-    await balanceCommand(message)
+    await balanceCommand(message.author.id, message)
   } else if(command === "getdata") {
     let data = await getData()
     console.log(data)

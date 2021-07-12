@@ -109,7 +109,7 @@ async function balanceCommand(userID, messageClient) {
     })
     await i.save()
     const embed = new Discord.MessageEmbed()
-    .setTitle(`${message.author.username}'s balance'`)
+    .setTitle(`${client.user.cache.get(userID).username}'s balance'`)
     .setDescription(`Balance: \`0\``)
     .setColor("RANDOM")
     .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
@@ -214,7 +214,7 @@ async function giveCommand() {
 async function addCommand(userID, amountToAdd, message) {
   if(!amountToAdd) return colors.red("No amount inputted")
   if(!message) return colors.red("message not define!")
-  if(isNaN(amountToAdd)) return colors.red("Amount is not a number")
+  if(isNaN(amountToAdd)) return message.channel.send("The amount given is not a number")
   if(!userID) return colors.red("Input the user id")
   let data = await db.findOne({userID})
   if(!data) {
@@ -224,14 +224,14 @@ async function addCommand(userID, amountToAdd, message) {
       balance: amountToAdd
     })
     await d.save()
-    return message.channel.send("Command completed!")
+    return message.channel.send(`Added ${amountToAdd} to <@${userID}>`)
   }
   await db.findOneAndUpdate({userID}, {
     $inc: {
       balance: parseInt(amountToAdd)
     }
   }).then((update) => {
-    return update && message.channel.send("Command completed!")
+    return update && message.channel.send(`Added ${amountToAdd} to <@${userID}>`)
   })
 }
 async function resetAll(messageClient) {
