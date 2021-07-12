@@ -7,9 +7,7 @@
   <p>
     <a href="https://www.npmjs.com/package/prodigous"><img src="https://nodei.co/npm/prodigous.png?downloads=true&stars=true" alt="NPM Banner"></a>
   </p>
-  <br> <br>
 </div>
+
 ## ✍🏻 | Examples
 You can find the examples on the [website](https://prodigous.gitbook.io/prodigo/)
-<br />
-<hr />
