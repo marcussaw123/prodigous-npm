@@ -95,11 +95,11 @@ async function connect(mongodbURI) {
     throw new Error(err)
   })
 }
-async function balanceCommand(messageClient) {
+async function balanceCommand(userID, messageClient) {
   if(isConnected !== true) return colors.red("ERROR: Connect to mongodb first!")
+  if(!userID) return colors.red("No user id included!")
+    if(!messageClient) return colors.red("Include the message client in the fuction")
   const message = messageClient
- const userID = message.author.id
-  if(!messageClient) return colors.red("Include the message client in the fuction")
   let data = await db.findOne({userID})
   if(!data) {
     let i = await db.create({
