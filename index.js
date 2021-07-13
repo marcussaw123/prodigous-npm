@@ -394,7 +394,7 @@ async function userInfo(userID, message) {
       message.channel.send(embed)
     }
   }
-async function voiceLeaderboard(client) {
+async function voiceLeaderboard(client, message) {
   let lb = []
   let counter = 1
   const ms = require("pretty-ms")
@@ -409,7 +409,14 @@ async function voiceLeaderboard(client) {
       let mapped = lb.map(async(i) => {
         return `${counter++}. ${client.users.cache.get(i.userID).tag}(**${i.userID}**) - ${await ms(i.time)}`
       })
+      const embed = new Discord.MessageEmbed()
+      .setTitle("LEADERBOARD")
+      .setDescription(mapped)
+      .setTimestamp()
+      .setColor("RANDOM")
+      .setFooter("voice leaderboard")
+      message.channel.send(embed)
     }
   })
 }
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand }
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand, voiceLeaderboard }
