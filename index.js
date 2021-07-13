@@ -403,11 +403,11 @@ async function voiceLeaderboard(client, message) {
       console.log(err)
     } else {
       result.forEach(async(i) => {
-        await lb.push({userID: i.userID, time: i.time})
+        await lb.push({userID: i.userID, time: ms(i.time), userUsername: client.users.cache.get(i.userID).tag})
       })
       lb.sort((a, b) => b.time - a.time).filter(x => !isNaN(x.time))
-      let mapped = lb.map(async(i) => {
-        return `${counter++}. ${client.users.cache.get(i.userID).tag}(**${i.userID}**) - ${await ms(i.time)}`
+      const mapped = lb.map((i) => {
+        return `${counter++}. ${i.userUsername}(**${i.userID}**) - \`${i.time}\``
       })
       const embed = new Discord.MessageEmbed()
       .setTitle("LEADERBOARD")

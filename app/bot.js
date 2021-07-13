@@ -237,7 +237,7 @@ client.on('message', async(message) => {
   } else if(command === 'time') {
     let member = message.mentions.users.first() || message.author;
    await prodigous.timeCommand(member.id, message)
-  } else if(command === 'voicelb') {
+  } else if(command === 'voice') {
     await prodigous.voiceLeaderboard(client, message)
   }
 })
