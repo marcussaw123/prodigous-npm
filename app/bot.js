@@ -1,8 +1,12 @@
 
-const {sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, ButtonPaginator, userInfo, leaderboardCommand} = require('../index')
+const {sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, ButtonPaginator, userInfo, leaderboardCommand, voiceStart} = require('../index')
 const child_process = require('child_process')
 const config = require('./config.json')
 const Discord = require('discord.js')
+const {promisify} = require('util')
+const ms = require('pretty-ms')
+const wait = promisify(setTimeout)
+let time = 0
 const client = new Discord.Client()
 require('discord-buttons')(client)
 const {MessageButton, MessageActionRow} = require('discord-buttons')
@@ -10,6 +14,9 @@ client.on('ready', () => {
 console.log(client.user.username)
 client.channels.cache.get("841560639020204042").send("Bot restarted!")
 })
+client.on('voiceStateUpdate', async(oldState, newState) => {
+    await voiceStart(oldState, newState)
+});
 
 client.on('message', async(message) => {
   	const args = message.content.slice("!".length).trim().split(/ +/);
@@ -226,6 +233,9 @@ client.on('message', async(message) => {
     })
   } else if(command === 'lb' || command === 'leaderboard') {
     await leaderboardCommand(message, client)
+  } else if(command === 'time') {
+    let formattedtime = await ms(time)
+    message.channel.send(formattedtime)
   }
 })
 

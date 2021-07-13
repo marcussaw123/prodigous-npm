@@ -2,6 +2,7 @@ const colors = require('kolors-logger')
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
 const db = require('./models/economy')
+const db2 = require('./models/voice')
 const bin = require('sourcebin')
 require('dotenv')
 let isConnected = false
@@ -314,5 +315,84 @@ async function userInfo(userID, message) {
       }
   
   }
+  async function voiceStart(oldState, newState) {
+    if(!oldState || !newState) return colors.red("Pass in all the needed values!")
+    const {promisify} = require('util')
+    const wait = promisify(setTimeout)
+    if (isConnected !== true) return colors.red("Must connect to mongodb!")
+    if (oldState.channelID === null) {
+      console.log('user joined channel', newState.channelID)
+      let data = await db2.findOne({userID: newState.member.id})
+      if(!data) {
+        let i = await db2.create({
+          userID: newState.member.id,
+          time: 0
+        })
+        await i.save()
+             while (oldState.channelID === null) {
+        if (newState.channelID !== null) {
+          await wait(5000)
+          await db2.findOneAndUpdate({userID: newState.member.id}, {
+            $inc: {
+              time: 5000
+            }
+          })
+          console.log("added")
+          console.log(newState.channelID)
+        } else {
+          console.log("user left vc")
+          break;
+        }
+      }
+    } else {
+      
+      while (oldState.channelID === null) {
+        if (newState.channelID !== null) {
+          await wait(5000)
+           await db2.findOneAndUpdate({userID: newState.member.id}, {
+            $inc: {
+              time: 5000
+            }
+          })
+          console.log("added")
+          console.log(newState.channelID)
+        } else {
+          console.log("user left vc")
+          break;
+        }
+      }
+    }
+    }
+    
 
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand }
+  }
+  async function timeCommand(userID, message) {
+    if(!userID || !message) return colors.red("Pass in all the values needed!")
+    const ms = require('pretty-ms')
+    const embed = new Discord.MessageEmbed()
+    let data = await db2.findOne({userID})
+    if(!data) {
+      let i = await db2.create({
+        time: 0,
+        userID
+      })
+      await i.save()
+      embed.setDescription(`Time: No data recorded!`)
+      embed.setColor("RED")
+      embed.setTimestamp()
+      message.channel.send(embed)
+    } else if(data.time === 0){
+      embed.setDescription(`Time: No data recorded!`)
+      embed.setColor("RED")
+      embed.setTimestamp()
+      message.channel.send(embed)
+    } else {
+      let time = await ms(data.time)
+      embed.setDescription(`${time}`)
+      embed.setColor("GREEN")
+      embed.setTimestamp()
+      message.channel.send(userID)
+    }
+  }
+
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart }
