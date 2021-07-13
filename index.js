@@ -394,5 +394,22 @@ async function userInfo(userID, message) {
       message.channel.send(embed)
     }
   }
-
+async function voiceLeaderboard(client) {
+  let lb = []
+  let counter = 1
+  const ms = require("pretty-ms")
+  await db2.find({}, function(err, result) {
+    if(err) {
+      console.log(err)
+    } else {
+      result.forEach(async(i) => {
+        await lb.push({userID: i.userID, time: i.time})
+      })
+      lb.sort((a, b) => b.time - a.time).filter(x => !isNaN(x.time))
+      let mapped = lb.map(async(i) => {
+        return `${counter++}. ${client.users.cache.get(i.userID).tag}(**${i.userID}**) - ${await ms(i.time)}`
+      })
+    }
+  })
+}
 module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand }
