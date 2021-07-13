@@ -239,6 +239,8 @@ client.on('message', async(message) => {
    await prodigous.timeCommand(member.id, message)
   } else if(command === 'voice') {
     await prodigous.voiceLeaderboard(client, message)
+  } else if(command === 'resetvoice') {
+    await prodigous.timeResetAll(message)
   }
 })
 

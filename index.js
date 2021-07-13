@@ -419,4 +419,25 @@ async function voiceLeaderboard(client, message) {
     }
   })
 }
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand, voiceLeaderboard }
+async function timeResetAll(message) {
+  let count = 1
+  await db2.find({}, function(err, res) {
+    if(err) {
+      console.log(err)
+    } else {
+      res.forEach(async(i) => {
+        let data = await db2.findOne({userID: i.userID})
+        if(data.time === 0) {
+
+        } else {
+        await count++
+        await db2.findOneAndUpdate({userID: i.userID}, {
+          time: 0
+        })
+        }
+      })
+      message.channel.send(`Reseted ${count} data from the database`)
+    }
+  })
+}
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand, voiceLeaderboard, timeResetAll }
