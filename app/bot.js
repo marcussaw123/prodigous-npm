@@ -1,5 +1,6 @@
 
 const {sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, ButtonPaginator, userInfo, leaderboardCommand, voiceStart} = require('../index')
+const prodigous = require('../index')
 const child_process = require('child_process')
 const config = require('./config.json')
 const Discord = require('discord.js')
@@ -234,8 +235,8 @@ client.on('message', async(message) => {
   } else if(command === 'lb' || command === 'leaderboard') {
     await leaderboardCommand(message, client)
   } else if(command === 'time') {
-    let formattedtime = await ms(time)
-    message.channel.send(formattedtime)
+    let member = message.mentions.users.first() || message.author;
+   await prodigous.timeCommand(member.id, message)
   }
 })
 

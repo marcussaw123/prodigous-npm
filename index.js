@@ -391,8 +391,8 @@ async function userInfo(userID, message) {
       embed.setDescription(`${time}`)
       embed.setColor("GREEN")
       embed.setTimestamp()
-      message.channel.send(userID)
+      message.channel.send(embed)
     }
   }
 
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart }
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand }
