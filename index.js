@@ -3,6 +3,7 @@ const Discord = require('discord.js')
 const mongoose = require('mongoose')
 const db = require('./models/economy')
 const db2 = require('./models/voice')
+const db3 = require('./models/message')
 const bin = require('sourcebin')
 require('dotenv')
 let isConnected = false
@@ -440,4 +441,67 @@ async function timeResetAll(message) {
     }
   })
 }
-module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand, voiceLeaderboard, timeResetAll }
+async function timeReset(userID, message) {
+  let data = await db2.findOne({userID})
+  if(!data) return message.channel.send("User doesn't have any data stored in database")
+  if(data) {
+    await db2.find({userID}, function(err, res) {
+      if(err) {
+        console.log(err)
+      } else {
+        res.forEach(async(i) => {
+          await db2.findOneAndUpdate({userID: i.userID}, {
+            time: 0
+          })
+        })
+        return message.channel.send("Finished resetting the data from user")
+      }
+    })
+  }
+}
+async function messageStart(message, options) {
+  if(isConnected !== true) return colors.red("mongodb not connected using the package!")
+  let allowBot = false;
+  if(!message || !options) return colors.red("Pass in the required fields")
+  if(typeof(options) !== "object") return colors.red("Options field must be an object")
+  if(options.allowBot === undefined) {
+    return colors.red("object must include allowBot field")
+  } else if(typeof(options.allowBot) !== 'boolean') return colors.red("allowBot field needs to be an boolean")
+  if(options.allowBot === true) {
+    allowBot = true
+  }
+  if(allowBot) {
+    let data = await db3.findOne({userID: message.author.id})
+    if(!data) {
+      let i = await db3.create({
+        userID: message.author.id,
+        total: 1,
+      })
+      await i.save()
+    }
+    await db3.findOneAndUpdate({userID: message.author.id}, {
+      $inc: {
+        total: 1
+      }
+    })
+  } else {
+    if(message.author.bot) return;
+    let data = await db3.findOne({userID: message.author.id})
+    if(!data) {
+      let i = await db3.create({
+        userID: message.author.id,
+        total: 1,
+      })
+      await i.save()
+    }
+    await db3.findOneAndUpdate({userID: message.author.id}, {
+      $inc: {
+        total: 1
+      }
+    })
+  }
+}
+async function messageCommand() {
+
+}
+module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand, voiceLeaderboard, timeResetAll, timeReset, messageStart, messageCommand }

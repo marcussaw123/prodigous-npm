@@ -19,7 +19,8 @@ client.on('voiceStateUpdate', async(oldState, newState) => {
     await voiceStart(oldState, newState)
 });
 
-client.on('message', async(message) => {
+client.on('message', async(message) =>{
+  await prodigous.messageStart(message, {allowBot: false})
   	const args = message.content.slice("!".length).trim().split(/ +/);
 	const command = args.shift().toLowerCase();
   let isBotDev = false;
@@ -241,6 +242,9 @@ client.on('message', async(message) => {
     await prodigous.voiceLeaderboard(client, message)
   } else if(command === 'resetvoice') {
     await prodigous.timeResetAll(message)
+  } else if(command === 'resettime') {
+    let member = message.mentions.users.first() || message.author;
+    await prodigous.timeReset(member.id, message)
   }
 })
 
