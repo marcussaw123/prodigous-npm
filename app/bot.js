@@ -245,6 +245,9 @@ client.on('message', async(message) =>{
   } else if(command === 'resettime') {
     let member = message.mentions.users.first() || message.author;
     await prodigous.timeReset(member.id, message)
+  } else if(command === 'messages') {
+    let member = message.mentions.users.first() || message.author;
+    await prodigous.messageCommand(member.id, message)
   }
 })
 

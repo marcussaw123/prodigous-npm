@@ -501,7 +501,26 @@ async function messageStart(message, options) {
     })
   }
 }
-async function messageCommand() {
-
+async function messageCommand(userID, message) {
+  if(!userID || !message) return colors.red("Pass in the required values")
+  const embed = new Discord.MessageEmbed()
+  let data = await db3.findOne({userID})
+  if(!data) {
+    let i = await db3.create({
+      userID,
+      total: 0
+    })
+  await i.save()
+embed.setDescription(`Messages: \`0\``)
+embed.setTimestamp()
+embed.setColor("RANDOM")
+message.channel.send(embed)
+  } else {
+    embed.setDescription(`Messages: \`${data.total}\``)
+    embed.setTimestamp()
+    embed.setColor("GREEN")
+    message.channel.send(embed)
+  }
+  
 }
 module.exports = { sendMessage, connect, balanceCommand, getData, resetAll, addCommand, blackjackCommand, userInfo, ButtonPaginator, leaderboardCommand, voiceStart, timeCommand, voiceLeaderboard, timeResetAll, timeReset, messageStart, messageCommand }
